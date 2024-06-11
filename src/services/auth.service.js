@@ -1,15 +1,16 @@
 import { UserRepository } from '../repositories/users.repository.js'
+import { HttpError } from '../errors/http.error.js';
+import { ACCESS_TOKEN_SECRET } from '../constants/env.constant.js'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 export class AuthService {
+
     userRepository = new UserRepository();
 
     authSignUp = async (email, password, name) => {
-        const emailExisted = userRepository.getEmail(email);
-        if (emailExisted) throw new BadRequest('이메일 이미 있음');
-
-        const user = userRepository.authSignUp(email, password, name);
-
+        const emailExisted = await this.userRepository.getMyInfo(email);
+        if (emailExisted) throw new HttpError.BadRequest('이메일 이미 있음');
+        const user = await this.userRepository.authSignUp(email, password, name);
         return {
             id: user.id,
             email: user.email,
@@ -20,25 +21,16 @@ export class AuthService {
         }
     }
     authSignIn = async (email, password) => {
-        const emailExisted = userRepository.getEmail(email);
+        const emailExisted = await this.userRepository.getMyInfo(email);
         if (!emailExisted || !bcrypt.compareSync(password, emailExisted.password)) {
-            throw new BadRequest('사용자 정보 틀림');
+            throw new HttpError.BadRequest('사용자 정보 틀림');
         }
-
+        const payload = { id: emailExisted.id };
         const accessToken = jwt.sign(
-            payload = {
-                id: user.id
-            },
-            ENV_KEY.ACCESS_TOKEN_SECRET,
-            {
-                expiresIn: '12h',
-            });
-
-
+            payload,
+            ACCESS_TOKEN_SECRET,
+            { expiresIn: '12h', });
         // 로그인은 repository가 필요없다고 생각
-        // const user = userRepository.authSignIn(email, password);
-
-
         return {
             data: { accessToken }
         }
