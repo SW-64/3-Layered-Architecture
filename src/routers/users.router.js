@@ -1,22 +1,11 @@
 import express from 'express';
 import { requireAccessToken } from '../middlewares/require-access-token.middleware.js';
-import { HTTP_STATUS } from '../constants/http-status.constant.js';
-import { MESSAGES } from '../constants/message.constant.js';
 
+import { UsersController } from '../controllers/users.controller.js';
 const usersRouter = express.Router();
+// UsersController라는 생성자 함수를 호출하여 usercontroller라는 객체 생성
+const usercontroller = new UsersController();
 
-usersRouter.get('/me', requireAccessToken, (req, res, next) => {
-  try {
-    const data = req.user;
-
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.USERS.READ_ME.SUCCEED,
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+usersRouter.get('/me', requireAccessToken, usercontroller.getMyInfo)
 
 export { usersRouter };
