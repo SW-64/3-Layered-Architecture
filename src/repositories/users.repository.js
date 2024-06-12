@@ -19,5 +19,14 @@ export class UserRepository {
 
         })
         return user;
+    };
+    SameWithPayload = async (Id) => {
+
+        const user = await prisma.user.findUnique({
+            where: { id: Id },
+            omit: { password: true },
+        });
+        return user;
+
     }
 }
