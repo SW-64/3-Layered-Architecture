@@ -32,10 +32,9 @@ export class ResumeController {
     SeeAllResume = async (req, res, next) => {
         try {
             const user = req.user;
-            let { sort } = req.query;
+            let { sort, status } = req.query;
 
-            const allResume = await this.resumeService.allResume(user, { sort });
-            console.log(allResume);
+            const allResume = await this.resumeService.allResume(user, { sort, status });
             return res.status(HTTP_STATUS.OK).json({
                 status: HTTP_STATUS.OK,
                 message: MESSAGES.RESUMES.READ_LIST.SUCCEED,
@@ -80,8 +79,7 @@ export class ResumeController {
         try {
             const user = req.user;
             const { id } = req.params;
-
-            const deleteResume = await this.resumeRepository.deleteResume(user, id);
+            const deleteResume = await this.resumeService.deleteResume(user, id);
             return res.status(HTTP_STATUS.OK).json({
                 status: HTTP_STATUS.OK,
                 message: MESSAGES.RESUMES.DELETE.SUCCEED,

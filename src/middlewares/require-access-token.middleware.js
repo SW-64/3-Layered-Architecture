@@ -57,21 +57,8 @@ export const requireAccessToken = async (req, res, next) => {
     }
 
     // Payload에 담긴 사용자 ID와 일치하는 사용자가 없는 경우
-
-    /*
     const { id } = payload;
-    const user = await prisma.user.findUnique({
-      where: { id },
-      omit: { password: true },
-    });
-
-    */
-    const { id } = payload;
-    console.log(id);
     const user = await userRepository.SameWithPayload(id);
-    console.log(user);
-
-
     if (!user) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({
         status: HTTP_STATUS.UNAUTHORIZED,
